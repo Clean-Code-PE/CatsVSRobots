@@ -19,9 +19,12 @@ rect.center = (x, y)
 run = True
 while run:
 
+    screen.blit(img, rect)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
 
+    pygame.display.update()
 
 pygame.quit()
