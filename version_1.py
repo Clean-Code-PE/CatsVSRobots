@@ -18,10 +18,12 @@ GRAVITY = 0.75
 moving_left = False
 moving_right = False
 shoot = False 
+grenade = False
+grenade_tick = False
 
 #load bullet images
 bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
-
+grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
 
 BG = (144, 201, 120)
 RED = (255, 0, 0)
@@ -32,12 +34,14 @@ def draw_bg():
 
 
 class Soldier(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, scale, speed, ammo):
+    def __init__(self, char_type, x, y, scale, speed, ammo, grenades=0):
         pygame.sprite.Sprite.__init__(self)
         self.alive = True
         self.char_type = char_type
         self.speed = speed
-        self.ammo = ammo
+        self.grenades = grenades
+        self.start_grenades = grenades
+        self.ammo = ammo #Munição
         self.start_ammo = ammo
         self.health = 100
         self.max_health = self.health
@@ -189,12 +193,46 @@ class Bullet(pygame.sprite.Sprite):
                 self.kill()
 
 
+class Grenade(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction):
+        pygame.sprite.Sprite.__init__(self)
+        self.timer = 100
+        self.vel_y = -10
+        self.speed = 8
+        self.image = grenade_img
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.direction = direction
+
+    def update(self):
+        self.vel_y += GRAVITY
+        dx = self.direction * self.speed
+        dy = self.vel_y
+
+        #Colision grenade
+        if self.rect.bottom + dy > 300:
+            dy = 300 - self.rect.bottom
+
+            #Slicing grenade
+            self.speed -= 1.6
+            if self.speed <= 0:
+                self.speed = 0
+
+        if self.rect.left + dx < 0 or self.rect.right + dx > screen_width:
+            self.direction *= -1
+            dx = self.direction * self.speed
+
+        #move grenade
+        self.rect.x += dx
+        self.rect.y += dy
+
 #create sprites groups
 bullet_group = pygame.sprite.Group()
+grenade_group = pygame.sprite.Group()
 
 
 
-player = Soldier('player', 200, 200, 3, 5, 20)
+player = Soldier('player', 200, 200, 3, 5, 20, 10)
 enemy = Soldier('enemy', 400, 250, 3, 5, 20)
 
 
@@ -214,13 +252,19 @@ while run:
     #update and draw groups
     bullet_group.update()
     bullet_group.draw(screen)
-
-
+    grenade_group.update()
+    grenade_group.draw(screen)
 
     #update player's action
     if player.alive:
         if shoot:
             player.shoot()
+        elif grenade and not grenade_tick and player.grenades > 0:
+            grenade = Grenade(player.rect.centerx + (player.rect.size[0] * player.direction * 0.2), player.rect.centery + (player.rect.size[1] * -0.3 ), player.direction)
+            grenade_group.add(grenade)
+            grenade_tick = True
+            player.grenades -= 1
+            print(player.grenades)
         if player.in_air:
             player.update_action(2) #jump
         elif moving_left or moving_right:
@@ -241,6 +285,8 @@ while run:
                 moving_right = True
             if event.key == pygame.K_SPACE:
                 shoot = True
+            if event.key == pygame.K_q:
+                grenade = True
             if event.key == pygame.K_w and player.alive:
                 player.jump = True
             if event.key == pygame.K_ESCAPE:
@@ -254,6 +300,9 @@ while run:
                 moving_right = False
             if event.key == pygame.K_SPACE:
                 shoot = False
+            if event.key == pygame.K_q:
+                grenade = False
+                grenade_tick = False
 
     pygame.display.update()
 
