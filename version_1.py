@@ -26,6 +26,16 @@ grenade_tick = False
 bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
 grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
 
+#coletaveis
+heal_box_img = pygame.image.load('img/icons/health_box.png').convert_alpha()
+ammo_box_img = pygame.image.load('img/icons/ammo_box.png').convert_alpha()
+grenade_box_img = pygame.image.load('img/icons/grenade_box.png').convert_alpha()
+item_boxes = {
+    'Health'    : heal_box_img,
+    'Ammo'      : ammo_box_img,
+    'Grenade'   : grenade_box_img
+}
+
 BG = (144, 201, 120)
 RED = (255, 0, 0)
 
@@ -165,6 +175,29 @@ class Soldier(pygame.sprite.Sprite):
         screen.blit(pygame.transform.flip(
             self.image, self.flip, False), self.rect)
 
+class ItemBox (pygame.sprite.Sprite):
+    def __init__(self, item_type, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.item_type = item_type
+        self.image = item_boxes[self.item_type]
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
+
+    def update(self):
+        #Checa se o jogador colidiu com um item
+        if pygame.sprite.collide_rect(self, player):
+            #Checa que tipo de item foi coletado
+            if self.item_type == "Health":
+                player.health += 25
+                if player.health > player.max_health:
+                    player.health = player.max_health 
+            elif self.item_type == "Ammo":
+                player.ammo += 15
+            elif self.item_type == "Grenade":
+                player.grenades += 3
+        self.kill()
+
+
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction):
@@ -280,6 +313,15 @@ group_enemys = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 grenade_group = pygame.sprite.Group()
 explosion_group = pygame.sprite.Group()
+item_box_group = pygame.sprite.Group()
+
+#temp - create item boxes
+item_box = ItemBox('Health', 100, 300)
+item_box_group.add(item_box)
+item_box = ItemBox('Ammo', 400, 300)
+item_box_group.add(item_box)
+item_box = ItemBox('Grenade', 300, 300)
+item_box_group.add(item_box)
 
 
 player = Soldier('player', 200, 200, 3, 5, 20, 10)
@@ -309,6 +351,9 @@ while run:
     grenade_group.draw(screen)
     explosion_group.update()
     explosion_group.draw(screen)
+    item_box_group.update()
+    item_box_group.draw(screen)
+     
 
     #update player's action
     if player.alive:
