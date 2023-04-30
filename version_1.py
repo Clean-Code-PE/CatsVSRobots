@@ -69,7 +69,6 @@ def draw_text(text, font, text_col, x, y):
 
 def draw_bg():
     screen.fill(BG)
-    pygame.draw.line(screen, RED, (0, 300), (screen_width, 300))
 
 
 class Soldier(pygame.sprite.Sprite):
@@ -117,7 +116,8 @@ class Soldier(pygame.sprite.Sprite):
         self.image = self.animation_list[self.action][self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
 
     def update(self):
         self.update_animation()
@@ -156,9 +156,21 @@ class Soldier(pygame.sprite.Sprite):
 
 
         #check collision with floor
-        if self.rect.bottom + dy > 300:
-            dy = 300 - self.rect.bottom
-            self.in_air = False
+        for tile in world.obstacle_list:
+            #check collision in the x direction
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                dx = 0
+            #check collision in the y direction
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                #check if bellow the ground
+                if self.vel_y < 0:
+                    self.vel_y = 0
+                    dy = tile[1].bottom - self.rect.top
+                #check if above the ground
+                elif self.vel_y >= 0:
+                    self.vel_y = 0
+                    self.in_air = False
+                    dy = tile[1].top - self.rect.bottom
 
         # update rectangle position
         self.rect.x += dx
@@ -381,7 +393,10 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.x += (self.direction * self.speed)
         if self.rect.right < 0 or self.rect.left > screen_width - 100:
             self.kill()
-
+        #check for collision with level
+        for tile in world.obstacle_list:
+            if tile[1].colliderect(self.rect):
+                self.kill()
         #check collision with characters
         if pygame.sprite.spritecollide(player, bullet_group, False):
             if player.alive:
@@ -406,6 +421,8 @@ class Grenade(pygame.sprite.Sprite):
         self.image = grenade_img
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
         self.direction = direction
 
     def update(self):
@@ -413,18 +430,24 @@ class Grenade(pygame.sprite.Sprite):
         dx = self.direction * self.speed
         dy = self.vel_y
 
-        #Colision grenade
-        if self.rect.bottom + dy > 300:
-            dy = 300 - self.rect.bottom
-
-            #Slicing grenade
-            self.speed -= 1.6
-            if self.speed <= 0:
+        #check for collsion with level
+        for tile in world.obstacle_list:
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                self.direction *= -1
+                dx = self.direction * self.speed
+        
+        #check collision in the y direction
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
                 self.speed = 0
-
-        if self.rect.left + dx < 0 or self.rect.right + dx > screen_width:
-            self.direction *= -1
-            dx = self.direction * self.speed
+                #check if bellow the ground
+                if self.vel_y < 0:
+                    self.vel_y = 0
+                    dy = tile[1].bottom - self.rect.top
+                #check if above the ground
+                elif self.vel_y >= 0:
+                    self.vel_y = 0
+                    dy = tile[1].top - self.rect.bottom
+        
 
         #move grenade
         self.rect.x += dx
