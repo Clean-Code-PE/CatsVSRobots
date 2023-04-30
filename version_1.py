@@ -1,6 +1,7 @@
 import pygame
 import os
 import random
+import csv
 
 pygame.init()
 
@@ -15,12 +16,25 @@ clock = pygame.time.Clock()
 FPS = 60
 GRAVITY = 0.75
 TILE_SIZE = 40
+ROWS = 16
+COLS = 150
+TILE_SIZE = screen_height // ROWS
+TILE_TYPES = 21
+level = 1
 
 moving_left = False
 moving_right = False
 shoot = False 
 grenade = False
 grenade_tick = False
+
+
+#store tiles in a list
+img_list = []
+for x in range(TILE_TYPES):
+    img = pygame.image.load(f'img/Tile/{x}.png')
+    img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+    img_list.append(img)
 
 #load bullet images
 bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
@@ -228,6 +242,32 @@ class Soldier(pygame.sprite.Sprite):
         screen.blit(pygame.transform.flip(
             self.image, self.flip, False), self.rect)
         
+
+
+class World():
+    def __init__(self):
+        self.obstacle_list = []
+
+    def process_data(self, data):
+        #iterate through each value in level data file
+        for y, row in enumerate(data):
+            for x, tile in enumerate(row):
+                if tile >= 0:
+                    img = img_list[tile]
+                    img_rect = img.get_rect()
+                    img_rect.x = x * TILE_SIZE
+                    img_rect.y = y * TILE_SIZE
+                    tile_data = (img, img_rect)
+                    if tile >= 0 and tile <= 8:
+                        self.obstacle_list.append(tile_data)
+                    elif tile >= 9 and tile <= 10:
+                        pass#water
+                    elif tile >= 11 and tile <= 14:
+                        pass#decoration
+                    elif tile >= 9 and tile <= 10:
+                        pass
+
+
 #Para adicionar um novo item no mapa, primeiramente temos que chamar importar a imagem lá em cima dessa maneira:
 #   nome_item_img = pygame.image.load('img/icons/nome-item.png').convert_alpha()"
 #Depois temos que atribuir um nome a ele dentro do dicionário ITEM_BOXES dessa maneira:
@@ -421,6 +461,20 @@ enemy = Soldier('enemy', 500, 200, 1.6, 2, 20)
 enemy2 = Soldier('enemy', 200, 200, 1.6, 2, 20)
 group_enemys.add(enemy)
 group_enemys.add(enemy2)
+
+
+#create empty tile list
+world_data = []
+for row in range(ROWS):
+    r = [-1] * COLS
+    world_data.append(r)
+#load in level data and create world
+with open(f'level{level}_data.csv', newline='') as csvfile:
+    reader = csv.reader(csvfile, delimiter=',')
+    for x, row in enumerate(reader):
+        for y, tile in enumerate(row):
+            world_data[x][y] = int(tile)
+
 
 run = True
 while run:
