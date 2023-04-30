@@ -30,10 +30,14 @@ grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
 health_box_img = pygame.image.load('img/icons/health_box.png').convert_alpha()
 ammo_box_img = pygame.image.load('img/icons/ammo_box.png').convert_alpha()
 grenade_box_img = pygame.image.load('img/icons/grenade_box.png').convert_alpha()
+boldrini_img = pygame.image.load("img/icons/boldrini.png").convert_alpha()
+cloud_img = pygame.image.load("img/icons/cloud.png").convert_alpha()
 item_boxes = {
 	'Health'	: health_box_img,
 	'Ammo'		: ammo_box_img,
-	'Grenade'	: grenade_box_img
+	'Grenade'	: grenade_box_img,
+    'Boldrini'  : boldrini_img,
+    'Cloud'     : cloud_img  
 }
 
 BG = (144, 201, 120)
@@ -223,6 +227,17 @@ class Soldier(pygame.sprite.Sprite):
     def draw(self):
         screen.blit(pygame.transform.flip(
             self.image, self.flip, False), self.rect)
+        
+#Para adicionar um novo item no mapa, primeiramente temos que chamar importar a imagem lá em cima dessa maneira:
+#   nome_item_img = pygame.image.load('img/icons/nome-item.png').convert_alpha()"
+#Depois temos que atribuir um nome a ele dentro do dicionário ITEM_BOXES dessa maneira:
+#   'nome-item': nome_item_img
+#Dentro da classe ItemBox no método update, definimos o que acontece se o player encostar no item, basta adicionar um elif. (Se tiver dando erro, copia o elif de cima e cola embaixo, depois muda o nome do item. Não sei que problema foi esse)
+#Depois, abaixo de "create item boxes", temos que criar uma variável para o item, dessa maneira e adiciona-lo ao grupo de sprites item_box_group:
+#   nome_item = ItemBox('nome-item', x, y)
+#   item_box_group.add(nome_item)
+#Por fim, se quiser que um contador do item apareça na tela, basta usar a função draw_text() no loop do jogo dessa maneira, por exemplo:
+#   draw_text('x 5', font, WHITE, 35, 15)
 
 class ItemBox(pygame.sprite.Sprite):
 	def __init__(self, item_type, x, y):
@@ -245,7 +260,11 @@ class ItemBox(pygame.sprite.Sprite):
 				player.ammo += 15
 			elif self.item_type == 'Grenade':
 				player.grenades += 3
-            
+			elif self.item_type == 'Boldrini':
+				player.speed = 1
+			elif self.item_type == 'Cloud':
+				player.speed += 2 
+                
 			self.kill()
 
 class HealthBar():
@@ -381,15 +400,21 @@ explosion_group = pygame.sprite.Group()
 item_box_group = pygame.sprite.Group()
 
 #temp - create item boxes
-item_box = ItemBox('Health', 100, 260)
+item_box = ItemBox('Health', 600, 260)
 item_box_group.add(item_box)
 item_box = ItemBox('Ammo', 400, 260)
 item_box_group.add(item_box)
 item_box = ItemBox('Grenade', 500, 260)
 item_box_group.add(item_box)
+item_box = ItemBox('Boldrini', 700, 260)
+item_box_group.add(item_box)
+item_box = ItemBox('Cloud', 300, 150)
+item_box_group.add(item_box)
+item_box = ItemBox('Cloud', 500, 150)
+item_box_group.add(item_box)
 
 
-player = Soldier('player', 200, 200, 1.7, 5, 20, 10)
+player = Soldier('player', 100, 200, 1.7, 5, 20, 10)
 health_bar = HealthBar(10, 10, player.health, player.health)
 
 enemy = Soldier('enemy', 500, 200, 1.6, 2, 20)
@@ -416,6 +441,7 @@ while run:
         screen.blit(bullet_img, (120 + (x * 10), 40))
     for x in range (player.grenades): 
         screen.blit(grenade_img, (165 + (x * 15), 60))
+    draw_text(f"SPEED: {player.speed}", font, WHITE, 10, 85)
 
 
     player.update()
@@ -475,7 +501,9 @@ while run:
                 player.jump = True
             if event.key == pygame.K_ESCAPE:
                 run = False
-
+            if event.key == pygame.K_r:
+                run = False
+                run = True
         # keyboard button released
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a:
