@@ -32,7 +32,7 @@ grenade_tick = False
 #store tiles in a list
 img_list = []
 for x in range(TILE_TYPES):
-    img = pygame.image.load(f'img/Tile/{x}.png')
+    img = pygame.image.load(f'img/tile/{x}.png')
     img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
     img_list.append(img)
 
@@ -261,12 +261,57 @@ class World():
                     if tile >= 0 and tile <= 8:
                         self.obstacle_list.append(tile_data)
                     elif tile >= 9 and tile <= 10:
-                        pass#water
+                        water = Water(img, x*TILE_SIZE, y*TILE_SIZE)
+                        water_group.add(water)
                     elif tile >= 11 and tile <= 14:
-                        pass#decoration
-                    elif tile >= 9 and tile <= 10:
-                        pass
+                        decoration = Decoration(img, x*TILE_SIZE, y*TILE_SIZE)
+                        decoration_group.add(decoration)
+                    elif tile == 15: #create player
+                        player = Soldier('player', x*TILE_SIZE, y*TILE_SIZE, 1.7, 5, 20, 10)
+                        health_bar = HealthBar(10, 10, player.health, player.health)
+                    elif tile == 16:
+                        enemy = Soldier('enemy', x*TILE_SIZE, y*TILE_SIZE, 1.6, 2, 20)
+                        group_enemys.add(enemy) 
+                    elif tile == 17:#create ammo box
+                        item_box = ItemBox('Ammo', x*TILE_SIZE, y*TILE_SIZE)
+                        item_box_group.add(item_box)
+                    elif tile == 18:#create grenade box
+                        item_box = ItemBox('Grenade', x*TILE_SIZE, y*TILE_SIZE)
+                        item_box_group.add(item_box)
+                    elif tile == 19:#create health box
+                        item_box = ItemBox('Health', x*TILE_SIZE, y*TILE_SIZE)
+                        item_box_group.add(item_box)
+                    elif tile == 20:#create exit
+                        exit = Exit(img, x*TILE_SIZE, y*TILE_SIZE)
+                        exit_group.add(exit)
+        return player, health_bar
+    
+    def draw(self):
+        for tile in self.obstacle_list:
+            screen.blit(tile[0], tile[1])
 
+class Decoration(pygame.sprite.Sprite):
+    def __init__(self, img, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x * TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
+
+
+class Water(pygame.sprite.Sprite):
+    def __init__(self, img, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x * TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
+
+
+class Exit(pygame.sprite.Sprite):
+    def __init__(self, img, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x * TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
 
 #Para adicionar um novo item no mapa, primeiramente temos que chamar importar a imagem lá em cima dessa maneira:
 #   nome_item_img = pygame.image.load('img/icons/nome-item.png').convert_alpha()"
@@ -438,30 +483,9 @@ bullet_group = pygame.sprite.Group()
 grenade_group = pygame.sprite.Group()
 explosion_group = pygame.sprite.Group()
 item_box_group = pygame.sprite.Group()
-
-#temp - create item boxes
-item_box = ItemBox('Health', 600, 260)
-item_box_group.add(item_box)
-item_box = ItemBox('Ammo', 400, 260)
-item_box_group.add(item_box)
-item_box = ItemBox('Grenade', 500, 260)
-item_box_group.add(item_box)
-item_box = ItemBox('Boldrini', 700, 260)
-item_box_group.add(item_box)
-item_box = ItemBox('Cloud', 300, 150)
-item_box_group.add(item_box)
-item_box = ItemBox('Cloud', 500, 150)
-item_box_group.add(item_box)
-
-
-player = Soldier('player', 100, 200, 1.7, 5, 20, 10)
-health_bar = HealthBar(10, 10, player.health, player.health)
-
-enemy = Soldier('enemy', 500, 200, 1.6, 2, 20)
-enemy2 = Soldier('enemy', 200, 200, 1.6, 2, 20)
-group_enemys.add(enemy)
-group_enemys.add(enemy2)
-
+decoration_group = pygame.sprite.Group()
+water_group = pygame.sprite.Group()
+exit_group = pygame.sprite.Group()
 
 #create empty tile list
 world_data = []
@@ -474,14 +498,18 @@ with open(f'level{level}_data.csv', newline='') as csvfile:
     for x, row in enumerate(reader):
         for y, tile in enumerate(row):
             world_data[x][y] = int(tile)
-
+world = World()
+player, health_bar = world.process_data(world_data)
 
 run = True
 while run:
 
     clock.tick(FPS)
 
+    #update background
     draw_bg()
+    #draw world map
+    world.draw()
     #vida do jogador
     health_bar.draw(player.health)
      
@@ -514,9 +542,15 @@ while run:
     grenade_group.draw(screen)
     explosion_group.update()
     explosion_group.draw(screen)
-    
+    decoration_group.update()
+    water_group.update()
+    exit_group.update()
+
     item_box_group.update()
     item_box_group.draw(screen)
+    decoration_group.draw(screen)
+    water_group.draw(screen)
+    exit_group.draw(screen)
      
 
     #update player's action
