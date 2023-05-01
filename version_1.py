@@ -24,6 +24,7 @@ TILE_TYPES = 21
 screen_scroll = 0
 bg_scroll = 0
 level = 1
+start_game = False
 
 moving_left = False
 moving_right = False
@@ -582,71 +583,76 @@ while run:
 
     clock.tick(FPS)
 
-    #update background
-    draw_bg()
-    #draw world map
-    world.draw()
-    #vida do jogador
-    health_bar.draw(player.health)
-     
-    #Mostra na tela munição, granadas e vida
-    draw_text(f"AMMO: {player.ammo}", font, WHITE, 10, 35)
-    draw_text(f"GRENADES: {player.grenades}", font, WHITE, 10, 60)
-    #Número da VIDA
-    # draw_text(f"{player.health}", font, WHITE, 165, 10)
-    #Decidir se deixa numero, imagem ou os dois
-    for x in range (player.ammo):
-        screen.blit(bullet_img, (120 + (x * 10), 40))
-    for x in range (player.grenades): 
-        screen.blit(grenade_img, (165 + (x * 15), 60))
-    draw_text(f"SPEED: {player.speed}", font, WHITE, 10, 85)
+    if start_game == False:
+        #main menu
+        pass
+    else:
+        #update background
+        draw_bg()
+        #draw world map
+        world.draw()
+        #vida do jogador
+        health_bar.draw(player.health)
+        
+        #Mostra na tela munição, granadas e vida
+        draw_text(f"AMMO: {player.ammo}", font, WHITE, 10, 35)
+        draw_text(f"GRENADES: {player.grenades}", font, WHITE, 10, 60)
+        
+        #Número da VIDA
+        # draw_text(f"{player.health}", font, WHITE, 165, 10)
+        #Decidir se deixa numero, imagem ou os dois
+        for x in range (player.ammo):
+            screen.blit(bullet_img, (120 + (x * 10), 40))
+        for x in range (player.grenades): 
+            screen.blit(grenade_img, (165 + (x * 15), 60))
+        draw_text(f"SPEED: {player.speed}", font, WHITE, 10, 85)
 
 
-    player.update()
-    player.draw()
+        player.update()
+        player.draw()
 
-    for enemy in group_enemys:
-        enemy.ai()
-        enemy.update()
-        enemy.draw()
+        for enemy in group_enemys:
+            enemy.ai()
+            enemy.update()
+            enemy.draw()
 
 
-    #update and draw groups
-    bullet_group.update()
-    bullet_group.draw(screen)
-    grenade_group.update()
-    grenade_group.draw(screen)
-    explosion_group.update()
-    explosion_group.draw(screen)
-    decoration_group.update()
-    water_group.update()
-    exit_group.update()
+        #update and draw groups
+        bullet_group.update()
+        bullet_group.draw(screen)
+        grenade_group.update()
+        grenade_group.draw(screen)
+        explosion_group.update()
+        explosion_group.draw(screen)
+        decoration_group.update()
+        water_group.update()
+        exit_group.update()
 
-    item_box_group.update()
-    item_box_group.draw(screen)
-    decoration_group.draw(screen)
-    water_group.draw(screen)
-    exit_group.draw(screen)
-     
+        item_box_group.update()
+        item_box_group.draw(screen)
+        decoration_group.draw(screen)
+        water_group.draw(screen)
+        exit_group.draw(screen)
+        
 
-    #update player's action
-    if player.alive:
-        if shoot:
-            player.shoot()
-        elif grenade and not grenade_tick and player.grenades > 0:
-            grenade = Grenade(player.rect.centerx + (player.rect.size[0] * player.direction * 0.2), player.rect.centery + (player.rect.size[1] * -0.3 ), player.direction)
-            grenade_group.add(grenade)
-            grenade_tick = True
-            player.grenades -= 1
-            print(player.grenades)
-        if player.in_air:
-            player.update_action(2) #jump
-        elif moving_left or moving_right:
-            player.update_action(1) #run
-        else:
-            player.update_action(0) #idled
-        screen_scroll = player.move(moving_left, moving_right)
-        bg_scroll -= screen_scroll
+        #update player's action
+        if player.alive:
+            if shoot:
+                player.shoot()
+            elif grenade and not grenade_tick and player.grenades > 0:
+                grenade = Grenade(player.rect.centerx + (player.rect.size[0] * player.direction * 0.2), player.rect.centery + (player.rect.size[1] * -0.3 ), player.direction)
+                grenade_group.add(grenade)
+                grenade_tick = True
+                player.grenades -= 1
+                print(player.grenades)
+            if player.in_air:
+                player.update_action(2) #jump
+            elif moving_left or moving_right:
+                player.update_action(1) #run
+            else:
+                player.update_action(0) #idled
+            screen_scroll = player.move(moving_left, moving_right)
+            bg_scroll -= screen_scroll
 
     for event in pygame.event.get():
         # quit game
