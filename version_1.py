@@ -1,9 +1,11 @@
 import pygame
+from pygame import mixer
 import os
 import random
 import csv
 import button
 
+mixer.init()
 pygame.init()
 
 
@@ -33,6 +35,9 @@ moving_right = False
 shoot = False 
 grenade = False
 grenade_tick = False
+
+#load music and sounds
+pygame.mixer.music.load('audio/music.mp3')
 
 # button imgs
 start_img = pygame.image.load('img/start_btn.png').convert_alpha()
