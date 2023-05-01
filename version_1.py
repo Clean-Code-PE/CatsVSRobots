@@ -36,6 +36,7 @@ grenade_tick = False
 # button imgs
 start_img = pygame.image.load('img/start_btn.png').convert_alpha()
 exit_img = pygame.image.load('img/exit_btn.png').convert_alpha()
+restart_img = pygame.image.load('img/restart_btn.png').convert_alpha()
 
 # load images
 pine1_img = pygame.image.load('img/background/pine1.png').convert_alpha()
@@ -90,6 +91,24 @@ def draw_bg():
         screen.blit(mountain_img, ((x*width) - bg_scroll * 0.6, screen_height - mountain_img.get_height()-300))
         screen.blit(pine1_img, ((x*width) - bg_scroll * 0.7, screen_height - pine1_img.get_height()-150))
         screen.blit(pine2_img, ((x*width) - bg_scroll * 0.8, screen_height - pine2_img.get_height()))
+
+def reset_level():
+    enemy_group.empty()
+    bullet_group.empty()
+    grenade_group.empty()
+    explosion_group.empty()
+    item_box_group.empty()
+    decoration_group.empty()
+    water_group.empty()
+    exit_group.empty()
+
+    # create empty tile list
+    data = []
+    for row in range(ROWS):
+        r = [-1] * COLS
+        data.append(r)
+    
+    return data
 
 
 class Soldier(pygame.sprite.Sprite):
@@ -334,7 +353,7 @@ class World():
                         health_bar = HealthBar(10, 10, player.health, player.health)
                     elif tile == 16:
                         enemy = Soldier('enemy', x*TILE_SIZE, y*TILE_SIZE, 1.65, 2, 20)
-                        group_enemys.add(enemy) 
+                        enemy_group.add(enemy) 
                     elif tile == 17:#create ammo box
                         item_box = ItemBox('Ammo', x*TILE_SIZE, y*TILE_SIZE)
                         item_box_group.add(item_box)
@@ -467,7 +486,7 @@ class Bullet(pygame.sprite.Sprite):
                 print(player.health)
                 self.kill()
 
-        for enemy in group_enemys:
+        for enemy in enemy_group:
             if pygame.sprite.spritecollide(enemy, bullet_group, False):
                 if player.alive:
                     enemy.health -= 25
@@ -529,7 +548,7 @@ class Grenade(pygame.sprite.Sprite):
                 player.health -= 50
                 print(f"Vida do player - {player.health}")
 
-            for enemy in group_enemys:
+            for enemy in enemy_group:
                 if abs(self.rect.centerx - enemy.rect.centerx) < TILE_SIZE * 2 and \
                     abs(self.rect.centery - enemy.rect.centery) < TILE_SIZE * 2:
                     enemy.health -= 50
@@ -568,10 +587,11 @@ class Explosion(pygame.sprite.Sprite):
 # create buttons
 start_button = button.Button(screen_width//2-130, screen_height//2-150, start_img, 1)
 exit_button = button.Button(screen_width//2-110, screen_height//2+50, exit_img, 1)
+restart_button = button.Button(screen_width//2-100, screen_height//2 - 50, restart_img, 2)
 
 
 #create sprites groups
-group_enemys = pygame.sprite.Group()
+enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 grenade_group = pygame.sprite.Group()
 explosion_group = pygame.sprite.Group()
@@ -632,7 +652,7 @@ while run:
         player.update()
         player.draw()
 
-        for enemy in group_enemys:
+        for enemy in enemy_group:
             enemy.ai()
             enemy.update()
             enemy.draw()
@@ -674,6 +694,20 @@ while run:
                 player.update_action(0) #idled
             screen_scroll = player.move(moving_left, moving_right)
             bg_scroll -= screen_scroll
+        else:
+            screen_scroll = 0
+            if restart_button.draw(screen):
+                bg_scroll = 0
+                reset_level()
+                with open(f'level{level}_data.csv', newline='') as csvfile:
+                    reader = csv.reader(csvfile, delimiter=',')
+                    for x, row in enumerate(reader):
+                        for y, tile in enumerate(row):
+                            world_data[x][y] = int(tile)
+                world = World()
+                player, health_bar = world.process_data(world_data)
+
+
 
     for event in pygame.event.get():
         # quit game
