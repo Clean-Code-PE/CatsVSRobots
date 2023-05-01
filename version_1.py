@@ -175,6 +175,9 @@ class Soldier(pygame.sprite.Sprite):
             #check collision in the x direction
             if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
                 dx = 0
+                if self.char_type == 'enemy':
+                    self.direction *= -1
+                    self.move_counter = 0
             #check collision in the y direction
             if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
                 #check if bellow the ground
