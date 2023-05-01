@@ -77,6 +77,7 @@ def draw_text(text, font, text_col, x, y):
 
 
 def draw_bg():
+    screen.fill(BG)
     width = sky_img.get_width()
     for x in range(5):
         screen.blit(sky_img, ((x*width)- bg_scroll * 0.5,0))
@@ -317,10 +318,10 @@ class World():
                         decoration = Decoration(img, x*TILE_SIZE, y*TILE_SIZE)
                         decoration_group.add(decoration)
                     elif tile == 15: #create player
-                        player = Soldier('player', x*TILE_SIZE, y*TILE_SIZE, 1.7, 5, 20, 10)
+                        player = Soldier('player', x*TILE_SIZE, y*TILE_SIZE, 1.65, 5, 20, 10)
                         health_bar = HealthBar(10, 10, player.health, player.health)
                     elif tile == 16:
-                        enemy = Soldier('enemy', x*TILE_SIZE, y*TILE_SIZE, 1.6, 2, 20)
+                        enemy = Soldier('enemy', x*TILE_SIZE, y*TILE_SIZE, 1.65, 2, 20)
                         group_enemys.add(enemy) 
                     elif tile == 17:#create ammo box
                         item_box = ItemBox('Ammo', x*TILE_SIZE, y*TILE_SIZE)
@@ -538,8 +539,8 @@ class Explosion(pygame.sprite.Sprite):
     def update(self):
         #scroll
         self.rect.x += screen_scroll
-        EXPLOSION_SPEED = 4
 
+        EXPLOSION_SPEED = 4
         #update
         self.counter += 1
         
@@ -591,7 +592,7 @@ while run:
     draw_text(f"AMMO: {player.ammo}", font, WHITE, 10, 35)
     draw_text(f"GRENADES: {player.grenades}", font, WHITE, 10, 60)
     #Número da VIDA
-    draw_text(f"{player.health}", font, WHITE, 165, 10)
+    # draw_text(f"{player.health}", font, WHITE, 165, 10)
     #Decidir se deixa numero, imagem ou os dois
     for x in range (player.ammo):
         screen.blit(bullet_img, (120 + (x * 10), 40))
