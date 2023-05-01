@@ -28,7 +28,7 @@ MAX_LEVELS = 3
 screen_scroll = 0
 bg_scroll = 0
 level = 1
-start_game = False
+start_game = False 
 
 moving_left = False
 moving_right = False
@@ -38,6 +38,14 @@ grenade_tick = False
 
 #load music and sounds
 pygame.mixer.music.load('audio/music.mp3')
+pygame.mixer.music.set_volume(0.2)
+pygame.mixer.music.play(-1, 0.0, 5000)
+jump_fx = pygame.mixer.Sound('audio/jump.wav')
+jump_fx.set_volume(0.5)
+shot_fx = pygame.mixer.Sound('audio/shot.wav')
+shot_fx.set_volume(0.5)
+grenade_fx = pygame.mixer.Sound('audio/grenade.wav')
+grenade_fx.set_volume(0.5)
 
 # button imgs
 start_img = pygame.image.load('img/start_btn.png').convert_alpha()
@@ -264,6 +272,7 @@ class Soldier(pygame.sprite.Sprite):
             #mudei o valor de 0.6 para 0.75 para impedir que o player tome dano do próprio tiro
             bullet_group.add(bullet)
             self.ammo -= 1
+            shot_fx.play()
     
 
     def ai(self):
@@ -552,6 +561,7 @@ class Grenade(pygame.sprite.Sprite):
 
         if self.timer <= 0:
             self.kill()
+            grenade_fx.play()
             explosion = Explosion(self.rect.x, self.rect.y, 0.5)
             explosion_group.add(explosion)
 
@@ -596,6 +606,16 @@ class Explosion(pygame.sprite.Sprite):
                 self.kill()
             else:
                 self.image = self.images[self.frame_index]
+
+class ScreenFade():
+    def __init__(self, direction, colour, speed):
+        self.direction = direction
+        self.colour = colour
+        self.speed = speed
+        self.fade_counter = 0
+    
+    def fade(self):
+        
 
 # create buttons
 start_button = button.Button(screen_width//2-130, screen_height//2-150, start_img, 1)
@@ -753,6 +773,7 @@ while run:
                 grenade = True
             if event.key == pygame.K_w and player.alive:
                 player.jump = True
+                jump_fx.play()
             if event.key == pygame.K_ESCAPE:
                 run = False
             if event.key == pygame.K_r:
