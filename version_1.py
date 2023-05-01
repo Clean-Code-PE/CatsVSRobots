@@ -31,7 +31,7 @@ grenade_tick = False
 # load images
 pine1_img = pygame.image.load('img/background/pine1.png').convert_alpha()
 pine2_img = pygame.image.load('img/background/pine2.png').convert_alpha()
-pine1_img = pygame.image.load('img/background/mountain.png').convert_alpha()
+mountain_img = pygame.image.load('img/background/mountain.png').convert_alpha()
 sky_img = pygame.image.load('img/background/sky_cloud.png').convert_alpha()
 
 
@@ -74,7 +74,10 @@ def draw_text(text, font, text_col, x, y):
 
 
 def draw_bg():
-    screen.fill(BG)
+    screen.blit(sky_img, (0,0))
+    screen.blit(mountain_img, (0, screen_height - mountain_img.get_height()-300))
+    screen.blit(pine1_img, (0, screen_height - pine1_img.get_height()-150))
+    screen.blit(pine2_img, (0, screen_height - pine2_img.get_height()))
 
 
 class Soldier(pygame.sprite.Sprite):
