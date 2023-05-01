@@ -2,6 +2,7 @@ import pygame
 import os
 import random
 import csv
+import button
 
 pygame.init()
 
@@ -31,6 +32,10 @@ moving_right = False
 shoot = False 
 grenade = False
 grenade_tick = False
+
+# button imgs
+start_img = pygame.image.load('img/start_btn.png').convert_alpha()
+exit_img = pygame.image.load('img/exit_btn.png').convert_alpha()
 
 # load images
 pine1_img = pygame.image.load('img/background/pine1.png').convert_alpha()
@@ -192,6 +197,12 @@ class Soldier(pygame.sprite.Sprite):
                     self.in_air = False
                     dy = tile[1].top - self.rect.bottom
 
+        # check for collision with water
+        if pygame.sprite.spritecollide(self, water_group, False): 
+            self.health = 0
+            
+        if self.rect.bottom > screen_height:
+            self.health = 0
 
         # verifica se está no final da tela
         if self.char_type == 'player':
@@ -554,6 +565,11 @@ class Explosion(pygame.sprite.Sprite):
             else:
                 self.image = self.images[self.frame_index]
 
+# create buttons
+start_button = button.Button(screen_width//2-130, screen_height//2-150, start_img, 1)
+exit_button = button.Button(screen_width//2-110, screen_height//2+50, exit_img, 1)
+
+
 #create sprites groups
 group_enemys = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
@@ -584,7 +600,12 @@ while run:
     clock.tick(FPS)
 
     if start_game == False:
-        #main menu
+        # draw a menu
+        screen.fill(BG)
+        if start_button.draw(screen):
+            start_game = True
+        if exit_button.draw(screen):
+            run = False
         pass
     else:
         #update background
@@ -597,7 +618,7 @@ while run:
         #Mostra na tela munição, granadas e vida
         draw_text(f"AMMO: {player.ammo}", font, WHITE, 10, 35)
         draw_text(f"GRENADES: {player.grenades}", font, WHITE, 10, 60)
-        
+
         #Número da VIDA
         # draw_text(f"{player.health}", font, WHITE, 165, 10)
         #Decidir se deixa numero, imagem ou os dois
