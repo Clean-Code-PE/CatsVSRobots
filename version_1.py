@@ -15,11 +15,14 @@ pygame.display.set_caption('unnamed')
 clock = pygame.time.Clock()
 FPS = 60
 GRAVITY = 0.75
+SCROLL_THRESH = 200
 TILE_SIZE = 40
 ROWS = 16
 COLS = 150
 TILE_SIZE = screen_height // ROWS
 TILE_TYPES = 21
+screen_scroll = 0
+bg_scroll = 0
 level = 1
 
 moving_left = False
