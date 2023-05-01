@@ -22,6 +22,7 @@ ROWS = 16
 COLS = 150
 TILE_SIZE = screen_height // ROWS
 TILE_TYPES = 21
+MAX_LEVELS = 3
 screen_scroll = 0
 bg_scroll = 0
 level = 1
@@ -220,10 +221,17 @@ class Soldier(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(self, water_group, False): 
             self.health = 0
             
+        level_complete = False
+        # check for collision with exit
+        if pygame.sprite.spritecollide(self, exit_group, False): 
+            level_complete = True
+            
+
+        # check for fallen of map
         if self.rect.bottom > screen_height:
             self.health = 0
 
-        # verifica se está no final da tela
+        # check for get to map edge
         if self.char_type == 'player':
             if self.rect.left + dx < 0 or self.rect.right + dx > screen_width:
                 dx = 0
@@ -241,7 +249,7 @@ class Soldier(pygame.sprite.Sprite):
                 self.rect.x -= dx
                 screen_scroll = -dx
         
-        return screen_scroll
+        return screen_scroll, level_complete
     
 
     def shoot(self):
@@ -692,8 +700,23 @@ while run:
                 player.update_action(1) #run
             else:
                 player.update_action(0) #idled
-            screen_scroll = player.move(moving_left, moving_right)
+            screen_scroll, level_complete = player.move(moving_left, moving_right)
             bg_scroll -= screen_scroll
+            # check if player has completed the level
+            if level_complete:
+                level += 1
+                bg_scroll = 0
+                world_data = reset_level()
+                if level <= MAX_LEVELS:
+                    with open(f'level{level}_data.csv', newline='') as csvfile:
+                        reader = csv.reader(csvfile, delimiter=',')
+                        for x, row in enumerate(reader):
+                            for y, tile in enumerate(row):
+                                world_data[x][y] = int(tile)
+                    world = World()
+                    player, health_bar = world.process_data(world_data)
+
+
         else:
             screen_scroll = 0
             if restart_button.draw(screen):
