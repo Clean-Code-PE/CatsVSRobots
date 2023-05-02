@@ -1,8 +1,10 @@
+from classes.Decoration import Decoration
+
 class World():
     def __init__(self):
         self.obstacle_list = []
 
-    def process_data(self, data, img_list, TILE_SIZE, Water, water_group, Decoration, decoration_group, \
+    def process_data(self, data, img_list, TILE_SIZE, Water, water_group, decoration_group, \
                       Soldier, HealthBar, enemy_group, ItemBox, item_box_group, Exit, exit_group):
         self.level_length = len(data[0])
         #iterate through each value in level data file
@@ -20,7 +22,7 @@ class World():
                         water = Water(img, x*TILE_SIZE, y*TILE_SIZE)
                         water_group.add(water)
                     elif tile >= 11 and tile <= 14:
-                        decoration = Decoration(img, x*TILE_SIZE, y*TILE_SIZE)
+                        decoration = Decoration(img, x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE)
                         decoration_group.add(decoration)
                     elif tile == 15: #create player
                         player = Soldier('player', x*TILE_SIZE, y*TILE_SIZE, 1.65, 5, 20, 10)

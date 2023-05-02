@@ -4,6 +4,7 @@ import csv
 import button
 from classes.Soldier import Soldier
 from classes.World import World
+from classes.Decoration import Decoration
 
 mixer.init()
 pygame.init()
@@ -127,18 +128,6 @@ def reset_level():
     return data
 
 
-class Decoration(pygame.sprite.Sprite):
-    def __init__(self, img, x, y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = img
-        self.rect = self.image.get_rect()
-        self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
-
-    def update(self):
-        self.rect.x += screen_scroll
-        
-
-
 class Water(pygame.sprite.Sprite):
     def __init__(self, img, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -159,17 +148,6 @@ class Exit(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.x += screen_scroll
-
-#Para adicionar um novo item no mapa, primeiramente temos que chamar importar a imagem lá em cima dessa maneira:
-#   nome_item_img = pygame.image.load('img/icons/nome-item.png').convert_alpha()"
-#Depois temos que atribuir um nome a ele dentro do dicionário ITEM_BOXES dessa maneira:
-#   'nome-item': nome_item_img
-#Dentro da classe ItemBox no método update, definimos o que acontece se o player encostar no item, basta adicionar um elif. (Se tiver dando erro, copia o elif de cima e cola embaixo, depois muda o nome do item. Não sei que problema foi esse)
-#Depois, abaixo de "create item boxes", temos que criar uma variável para o item, dessa maneira e adiciona-lo ao grupo de sprites item_box_group:
-#   nome_item = ItemBox('nome-item', x, y)
-#   item_box_group.add(nome_item)
-#Por fim, se quiser que um contador do item apareça na tela, basta usar a função draw_text() no loop do jogo dessa maneira, por exemplo:
-#   draw_text('x 5', font, WHITE, 35, 15)
 
 class ItemBox(pygame.sprite.Sprite):
 	def __init__(self, item_type, x, y):
@@ -395,7 +373,7 @@ with open(f'level{level}_data.csv', newline='') as csvfile:
         for y, tile in enumerate(row):
             world_data[x][y] = int(tile)
 world = World()
-player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, Water, water_group, Decoration, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, Exit, exit_group)
+player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, Water, water_group, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, Exit, exit_group)
 
 run = True
 while run:
@@ -449,7 +427,7 @@ while run:
         grenade_group.draw(screen)
         explosion_group.update()
         explosion_group.draw(screen)
-        decoration_group.update()
+        decoration_group.update(screen_scroll)
         water_group.update()
         exit_group.update()
 
@@ -497,7 +475,7 @@ while run:
                             for y, tile in enumerate(row):
                                 world_data[x][y] = int(tile)
                     world = World()
-                    player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, Water, water_group, Decoration, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, Exit, exit_group)
+                    player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, Water, water_group, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, Exit, exit_group)
 
 
         else:
@@ -514,7 +492,7 @@ while run:
                             for y, tile in enumerate(row):
                                 world_data[x][y] = int(tile)
                     world = World()
-                    player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, Water, water_group, Decoration, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, Exit, exit_group)
+                    player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, Water, water_group, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, Exit, exit_group)
 
 
 
