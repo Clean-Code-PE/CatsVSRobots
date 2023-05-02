@@ -129,34 +129,34 @@ def reset_level():
     
     return data
 
-class ItemBox(pygame.sprite.Sprite):
-	def __init__(self, item_type, x, y):
-		pygame.sprite.Sprite.__init__(self)
-		self.item_type = item_type
-		self.image = item_boxes[self.item_type]
-		self.rect = self.image.get_rect()
-		self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
+# class ItemBox(pygame.sprite.Sprite):
+# 	def __init__(self, item_type, x, y):
+# 		pygame.sprite.Sprite.__init__(self)
+# 		self.item_type = item_type
+# 		self.image = item_boxes[self.item_type]
+# 		self.rect = self.image.get_rect()
+# 		self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
 
 
-	def update(self):
-            self.rect.x += screen_scroll
-            #checa se o jogador pegou a caixa
-            if pygame.sprite.collide_rect(self, player):
+# 	def update(self):
+#             self.rect.x += screen_scroll
+#             #checa se o jogador pegou a caixa
+#             if pygame.sprite.collide_rect(self, player):
 
-                if self.item_type == 'Health':
-                    player.health += 25
-                    if player.health > player.max_health:
-                        player.health = player.max_health
-                elif self.item_type == 'Ammo':
-                    player.ammo += 15
-                elif self.item_type == 'Grenade':
-                    player.grenades += 3
-                elif self.item_type == 'Boldrini':
-                    player.speed = 1
-                elif self.item_type == 'Cloud':
-                    player.speed += 2 
+#                 if self.item_type == 'Health':
+#                     player.health += 25
+#                     if player.health > player.max_health:
+#                         player.health = player.max_health
+#                 elif self.item_type == 'Ammo':
+#                     player.ammo += 15
+#                 elif self.item_type == 'Grenade':
+#                     player.grenades += 3
+#                 elif self.item_type == 'Boldrini':
+#                     player.speed = 1
+#                 elif self.item_type == 'Cloud':
+#                     player.speed += 2 
                     
-                self.kill()
+#                 self.kill()
 
  
 class Bullet(pygame.sprite.Sprite):
@@ -280,7 +280,7 @@ with open(f'level{level}_data.csv', newline='') as csvfile:
         for y, tile in enumerate(row):
             world_data[x][y] = int(tile)
 world = World()
-player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, water_group, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, exit_group)
+player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, water_group, decoration_group, Soldier, HealthBar, enemy_group, item_boxes, item_box_group, exit_group)
 
 run = True
 while run:
@@ -337,8 +337,7 @@ while run:
         decoration_group.update(screen_scroll)
         water_group.update(screen_scroll)
         exit_group.update(screen_scroll)
-
-        item_box_group.update()
+        item_box_group.update(screen_scroll, player)
         item_box_group.draw(screen)
         decoration_group.draw(screen)
         water_group.draw(screen)
@@ -381,7 +380,7 @@ while run:
                             for y, tile in enumerate(row):
                                 world_data[x][y] = int(tile)
                     world = World()
-                    player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, water_group, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, exit_group)
+                    player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, water_group, decoration_group, Soldier, HealthBar, enemy_group,item_boxes, item_box_group, exit_group)
 
 
         else:
@@ -398,7 +397,7 @@ while run:
                             for y, tile in enumerate(row):
                                 world_data[x][y] = int(tile)
                     world = World()
-                    player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, water_group, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, exit_group)
+                    player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, water_group, decoration_group, Soldier, HealthBar, enemy_group, item_boxes, item_box_group, exit_group)
 
 
 

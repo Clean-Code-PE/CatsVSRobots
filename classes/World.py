@@ -1,13 +1,14 @@
 from classes.Decoration import Decoration
 from classes.Water import Water
 from classes.Exit import Exit
+from classes.ItemBox import ItemBox
 
 class World():
     def __init__(self):
         self.obstacle_list = []
 
     def process_data(self, data, img_list, TILE_SIZE, water_group, decoration_group, \
-                      Soldier, HealthBar, enemy_group, ItemBox, item_box_group, exit_group):
+                      Soldier, HealthBar, enemy_group, item_boxes, item_box_group, exit_group):
         self.level_length = len(data[0])
         #iterate through each value in level data file
         for y, row in enumerate(data):
@@ -33,13 +34,13 @@ class World():
                         enemy = Soldier('enemy', x*TILE_SIZE, y*TILE_SIZE, 1.65, 2, 20)
                         enemy_group.add(enemy) 
                     elif tile == 17:#create ammo box
-                        item_box = ItemBox('Ammo', x*TILE_SIZE, y*TILE_SIZE)
+                        item_box = ItemBox('Ammo', x*TILE_SIZE, y*TILE_SIZE, item_boxes, TILE_SIZE)
                         item_box_group.add(item_box)
                     elif tile == 18:#create grenade box
-                        item_box = ItemBox('Grenade', x*TILE_SIZE, y*TILE_SIZE)
+                        item_box = ItemBox('Grenade', x*TILE_SIZE, y*TILE_SIZE, item_boxes, TILE_SIZE)
                         item_box_group.add(item_box)
                     elif tile == 19:#create health box
-                        item_box = ItemBox('Health', x*TILE_SIZE, y*TILE_SIZE)
+                        item_box = ItemBox('Health', x*TILE_SIZE, y*TILE_SIZE, item_boxes, TILE_SIZE)
                         item_box_group.add(item_box)
                     elif tile == 20:#create exit
                         exit = Exit(img, x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE)
