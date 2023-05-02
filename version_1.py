@@ -4,6 +4,7 @@ import csv
 import button
 from classes.Soldier import Soldier
 from classes.World import World
+from classes.HealthBar import HealthBar
 
 mixer.init()
 pygame.init()
@@ -126,16 +127,6 @@ def reset_level():
     
     return data
 
-# class Exit(pygame.sprite.Sprite):
-#     def __init__(self, img, x, y):
-#         pygame.sprite.Sprite.__init__(self)
-#         self.image = img
-#         self.rect = self.image.get_rect()
-#         self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
-
-#     def update(self):
-#         self.rect.x += screen_scroll
-
 class ItemBox(pygame.sprite.Sprite):
 	def __init__(self, item_type, x, y):
 		pygame.sprite.Sprite.__init__(self)
@@ -165,21 +156,6 @@ class ItemBox(pygame.sprite.Sprite):
                     
                 self.kill()
 
-class HealthBar():
-    def __init__(self, x, y, health, max_health):
-        self.x = x
-        self.y = y
-        self.health = health
-        self.max_health = max_health
-    
-    def draw(self, health):
-        #update with new health
-        self.health = health
-        #calculate health ratio
-        ratio = self.health / self.max_health
-        pygame.draw.rect(screen, BLACK, (self.x - 2, self.y - 2, 154, 24))
-        pygame.draw.rect(screen, RED, (self.x, self.y, 150, 20))
-        pygame.draw.rect(screen, GREEN, (self.x, self.y, 150 * ratio, 20))
  
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction):
@@ -378,7 +354,7 @@ while run:
         #draw world map
         world.draw(screen_scroll, screen)
         #vida do jogador
-        health_bar.draw(player.health)
+        health_bar.draw(player.health, screen, BLACK, RED, GREEN)
         
         #Mostra na tela munição, granadas e vida
         draw_text(f"AMMO: {player.ammo}", font, WHITE, 10, 35)
