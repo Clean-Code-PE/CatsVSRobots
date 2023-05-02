@@ -4,7 +4,6 @@ import csv
 import button
 from classes.Soldier import Soldier
 from classes.World import World
-from classes.Decoration import Decoration
 
 mixer.init()
 pygame.init()
@@ -127,27 +126,15 @@ def reset_level():
     
     return data
 
+# class Exit(pygame.sprite.Sprite):
+#     def __init__(self, img, x, y):
+#         pygame.sprite.Sprite.__init__(self)
+#         self.image = img
+#         self.rect = self.image.get_rect()
+#         self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
 
-class Water(pygame.sprite.Sprite):
-    def __init__(self, img, x, y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = img
-        self.rect = self.image.get_rect()
-        self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
-
-    def update(self):
-        self.rect.x += screen_scroll
-
-
-class Exit(pygame.sprite.Sprite):
-    def __init__(self, img, x, y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = img
-        self.rect = self.image.get_rect()
-        self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
-
-    def update(self):
-        self.rect.x += screen_scroll
+#     def update(self):
+#         self.rect.x += screen_scroll
 
 class ItemBox(pygame.sprite.Sprite):
 	def __init__(self, item_type, x, y):
@@ -215,14 +202,12 @@ class Bullet(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(player, bullet_group, False):
             if player.alive:
                 player.health -= 5
-                print(player.health)
                 self.kill()
 
         for enemy in enemy_group:
             if pygame.sprite.spritecollide(enemy, bullet_group, False):
                 if player.alive:
                     enemy.health -= 25
-                    print(enemy.health)
                     self.kill()
 
 
@@ -279,13 +264,11 @@ class Grenade(pygame.sprite.Sprite):
             if abs(self.rect.centerx - player.rect.centerx) < TILE_SIZE * 2 and \
                 abs(self.rect.centery - player.rect.centery) < TILE_SIZE * 2:
                 player.health -= 50
-                print(f"Vida do player - {player.health}")
 
             for enemy in enemy_group:
                 if abs(self.rect.centerx - enemy.rect.centerx) < TILE_SIZE * 2 and \
                     abs(self.rect.centery - enemy.rect.centery) < TILE_SIZE * 2:
                     enemy.health -= 50
-                    print(f"Vida do inimigo - {enemy.health}")
             
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
@@ -373,7 +356,7 @@ with open(f'level{level}_data.csv', newline='') as csvfile:
         for y, tile in enumerate(row):
             world_data[x][y] = int(tile)
 world = World()
-player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, Water, water_group, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, Exit, exit_group)
+player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, water_group, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, exit_group)
 
 run = True
 while run:
@@ -428,8 +411,8 @@ while run:
         explosion_group.update()
         explosion_group.draw(screen)
         decoration_group.update(screen_scroll)
-        water_group.update()
-        exit_group.update()
+        water_group.update(screen_scroll)
+        exit_group.update(screen_scroll)
 
         item_box_group.update()
         item_box_group.draw(screen)
@@ -453,7 +436,6 @@ while run:
                 grenade_group.add(grenade)
                 grenade_tick = True
                 player.grenades -= 1
-                print(player.grenades)
             if player.in_air:
                 player.update_action(2) #jump
             elif moving_left or moving_right:
@@ -475,7 +457,7 @@ while run:
                             for y, tile in enumerate(row):
                                 world_data[x][y] = int(tile)
                     world = World()
-                    player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, Water, water_group, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, Exit, exit_group)
+                    player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, water_group, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, exit_group)
 
 
         else:
@@ -492,7 +474,7 @@ while run:
                             for y, tile in enumerate(row):
                                 world_data[x][y] = int(tile)
                     world = World()
-                    player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, Water, water_group, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, Exit, exit_group)
+                    player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, water_group, decoration_group, Soldier, HealthBar, enemy_group, ItemBox, item_box_group, exit_group)
 
 
 
