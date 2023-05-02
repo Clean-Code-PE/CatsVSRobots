@@ -128,96 +128,6 @@ def reset_level():
         data.append(r)
     
     return data
-
- 
-class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, direction):
-        pygame.sprite.Sprite.__init__(self)
-        self.speed = 10
-        self.image = bullet_img
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.direction = direction
-    
-    def update(self):
-        self.rect.x += (self.direction * self.speed) + screen_scroll
-        if self.rect.right < 0 or self.rect.left > screen_width - 100:
-            self.kill()
-        #check for collision with level
-        for tile in world.obstacle_list:
-            if tile[1].colliderect(self.rect):
-                self.kill()
-        #check collision with characters
-        if pygame.sprite.spritecollide(player, bullet_group, False):
-            if player.alive:
-                player.health -= 5
-                self.kill()
-
-        for enemy in enemy_group:
-            if pygame.sprite.spritecollide(enemy, bullet_group, False):
-                if player.alive:
-                    enemy.health -= 25
-                    self.kill()
-
-
-# class Grenade(pygame.sprite.Sprite):
-#     def __init__(self, x, y, direction):
-#         pygame.sprite.Sprite.__init__(self)
-#         self.timer = 90
-#         self.vel_y = -12
-#         self.speed = 10
-#         self.image = grenade_img
-#         self.rect = self.image.get_rect()
-#         self.rect.center = (x, y)
-#         self.width = self.image.get_width()
-#         self.height = self.image.get_height()
-#         self.direction = direction
-
-#     def update(self):
-#         self.vel_y += GRAVITY
-#         dx = self.direction * self.speed
-#         dy = self.vel_y
-
-#         #check for collsion with level
-#         for tile in world.obstacle_list:
-#             if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
-#                 self.direction *= -1
-#                 dx = self.direction * self.speed
-        
-#         #check collision in the y direction
-#             if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
-#                 self.speed = 0
-#                 #check if bellow the ground
-#                 if self.vel_y < 0:
-#                     self.vel_y = 0
-#                     dy = tile[1].bottom - self.rect.top
-#                 #check if above the ground
-#                 elif self.vel_y >= 0:
-#                     self.vel_y = 0
-#                     dy = tile[1].top - self.rect.bottom
-        
-
-#         #move grenade
-#         self.rect.x += dx + screen_scroll
-#         self.rect.y += dy
-
-#         self.timer -= 1
-
-#         if self.timer <= 0:
-#             self.kill()
-#             grenade_fx.play()
-#             explosion = Explosion(self.rect.x, self.rect.y, 0.5)
-#             explosion_group.add(explosion)
-
-#             #damage explosion
-#             if abs(self.rect.centerx - player.rect.centerx) < TILE_SIZE * 2 and \
-#                 abs(self.rect.centery - player.rect.centery) < TILE_SIZE * 2:
-#                 player.health -= 50
-
-#             for enemy in enemy_group:
-#                 if abs(self.rect.centerx - enemy.rect.centerx) < TILE_SIZE * 2 and \
-#                     abs(self.rect.centery - enemy.rect.centery) < TILE_SIZE * 2:
-#                     enemy.health -= 50
        
 # create screen fades
 intro_fade = ScreenFade(1, BLACK, 4)
@@ -293,13 +203,13 @@ while run:
         screen = player.draw(screen)
 
         for enemy in enemy_group:
-            player, TILE_SIZE, screen_scroll = enemy.ia(player, TILE_SIZE, screen_scroll, world, Bullet, bullet_group, shot_fx)
+            player, TILE_SIZE, screen_scroll = enemy.ia(player, TILE_SIZE, screen_scroll, world , bullet_group, shot_fx, bullet_img)
             enemy.update()
             screen = enemy.draw(screen)
 
 
         #update and draw groups
-        bullet_group.update()
+        bullet_group.update(screen_scroll, screen_width, world, player, bullet_group, enemy_group)
         bullet_group.draw(screen)
         grenade_group.update(GRAVITY, world, screen_scroll, grenade_fx, explosion_group, player, TILE_SIZE, enemy_group)
         grenade_group.draw(screen)
@@ -324,7 +234,7 @@ while run:
         #update player's action
         if player.alive:
             if shoot:
-                Bullet, bullet_group, shot_fx = player.shoot(Bullet, bullet_group, shot_fx)
+                Bullet, bullet_group, shot_fx = player.shoot(bullet_group, shot_fx, bullet_img)
             elif grenade and not grenade_tick and player.grenades > 0:
                 grenade = Grenade(player.rect.centerx + (player.rect.size[0] * player.direction * 0.2), player.rect.centery + (player.rect.size[1] * -0.3 ), player.direction, grenade_img)
                 grenade_group.add(grenade)

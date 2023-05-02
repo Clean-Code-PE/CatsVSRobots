@@ -1,6 +1,7 @@
 import pygame
 import os
 import random
+from classes.Bullet import Bullet
 
 class Soldier(pygame.sprite.Sprite):
     def __init__(self, char_type, x, y, scale, speed, ammo, grenades=0):
@@ -194,17 +195,17 @@ class Soldier(pygame.sprite.Sprite):
         
 
 
-    def shoot(self, Bullet, bullet_group, shot_fx):
+    def shoot(self, bullet_group, shot_fx, bullet_img):
         if self.shoot_cooldown == 0 and self.ammo > 0:
             self.shoot_cooldown = 20
-            bullet = Bullet(self.rect.centerx + (0.75 * self.rect.size[0] * self.direction), self.rect.centery, self.direction)
+            bullet = Bullet(self.rect.centerx + (0.75 * self.rect.size[0] * self.direction), self.rect.centery, self.direction, bullet_img)
             #mudei o valor de 0.6 para 0.75 para impedir que o player tome dano do próprio tiro
             bullet_group.add(bullet)
             self.ammo -= 1
             shot_fx.play()
         return Bullet, bullet_group, shot_fx
     
-    def ia(self, player, TILE_SIZE, screen_scroll, world, Bullet, bullet_group, shot_fx):
+    def ia(self, player, TILE_SIZE, screen_scroll, world, bullet_group, shot_fx, bullet_img):
         if self.alive and player.alive:
             if self.idling == False and random.randint(1, 200) == 1:
                 self.update_action(0) #parado
@@ -214,7 +215,7 @@ class Soldier(pygame.sprite.Sprite):
             if self.vision.colliderect(player.rect):
                 #para o movimento para atirar no jogador
                 self.update_action(0) #parado
-                self.shoot(Bullet, bullet_group, shot_fx)
+                self.shoot(bullet_group, shot_fx, bullet_img)
                  
             else:
                 if self.idling == False:
