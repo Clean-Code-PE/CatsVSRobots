@@ -5,6 +5,7 @@ import button
 from classes.Soldier import Soldier
 from classes.World import World
 from classes.HealthBar import HealthBar
+from classes.ScreenFade import ScreenFade 
 
 mixer.init()
 pygame.init()
@@ -275,31 +276,7 @@ class Explosion(pygame.sprite.Sprite):
                 self.kill()
             else:
                 self.image = self.images[self.frame_index]
-
-class ScreenFade():
-    def __init__(self, direction, colour, speed):
-        self.direction = direction
-        self.colour = colour
-        self.speed = speed
-        self.fade_counter = 0
-    
-    def fade(self):
-        fade_complete = False
-        self.fade_counter += self.speed
-        
-        if self.direction == 1:
-            pygame.draw.rect(screen, self.colour, (0- self.fade_counter,0, screen_width//2, screen_height))
-            pygame.draw.rect(screen, self.colour, (screen_width//2 + self.fade_counter,0, screen_width, screen_height))
-            pygame.draw.rect(screen, self.colour, (0, 0- self.fade_counter, screen_width, screen_height//2))
-            pygame.draw.rect(screen, self.colour, (0 , screen_height//2 + self.fade_counter, screen_width, screen_height//2))
-        # vertical screen fade down
-        elif self.direction == 2:
-            pygame.draw.rect(screen, self.colour, (0,0, screen_width, 0 + self.fade_counter))
-        
-        if self.fade_counter >= screen_width:
-            fade_complete = True 
-
-        return fade_complete        
+       
 # create screen fades
 intro_fade = ScreenFade(1, BLACK, 4)
 death_fade = ScreenFade(2, PINK, 6)
@@ -398,7 +375,7 @@ while run:
 
         #show intro
         if start_intro:
-            if intro_fade.fade():
+            if intro_fade.fade(screen, screen_width, screen_height):
                 start_intro = False
                 intro_fade.fade_counter = 0
         
@@ -438,7 +415,7 @@ while run:
 
         else:
             screen_scroll = 0
-            if death_fade.fade():
+            if death_fade.fade(screen, screen_width, screen_height):
                 if restart_button.draw(screen):
                     death_fade.fade_counter = 0
                     start_intro = True
