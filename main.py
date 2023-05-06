@@ -8,6 +8,9 @@ from classes.HealthBar import HealthBar
 from classes.ScreenFade import ScreenFade 
 from classes.Grenade import Grenade
 
+icon = pygame.image.load('./img/icons/icon.png') 
+pygame.display.set_icon(icon)
+
 mixer.init()
 pygame.init()
 
