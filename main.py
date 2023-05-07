@@ -1,7 +1,7 @@
 import pygame
 from pygame import mixer
 import csv
-import button
+import classes.button as button
 from classes.Soldier import Soldier
 from classes.World import World
 from classes.HealthBar import HealthBar

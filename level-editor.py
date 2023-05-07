@@ -1,5 +1,5 @@
 import pygame
-import button
+import classes.button as button
 import csv
 import pickle
 
