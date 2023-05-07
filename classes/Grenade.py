@@ -6,7 +6,7 @@ class Grenade(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.timer = 90
         self.vel_y = -12
-        self.speed = 10
+        self.speed = 8
         self.image = grenade_img
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
@@ -19,26 +19,25 @@ class Grenade(pygame.sprite.Sprite):
         dx = self.direction * self.speed
         dy = self.vel_y
 
-        #check for collsion with level
+        #verifica a colisão com o mapa
         for tile in world.obstacle_list:
             if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
                 self.direction *= -1
                 dx = self.direction * self.speed
         
-        #check collision in the y direction
+            #verifica a colisão em y
             if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
                 self.speed = 0
-                #check if bellow the ground
+                #colisão com o ambiente
                 if self.vel_y < 0:
                     self.vel_y = 0
                     dy = tile[1].bottom - self.rect.top
-                #check if above the ground
                 elif self.vel_y >= 0:
                     self.vel_y = 0
                     dy = tile[1].top - self.rect.bottom
         
 
-        #move grenade
+        #movimentação da granada
         self.rect.x += dx + screen_scroll
         self.rect.y += dy
 
@@ -50,7 +49,7 @@ class Grenade(pygame.sprite.Sprite):
             explosion = Explosion(self.rect.x, self.rect.y, 0.5)
             explosion_group.add(explosion)
 
-            #damage explosion
+            #dano da explosão
             if abs(self.rect.centerx - player.rect.centerx) < TILE_SIZE * 2 and \
                 abs(self.rect.centery - player.rect.centery) < TILE_SIZE * 2:
                 player.health -= 3

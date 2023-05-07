@@ -1,7 +1,7 @@
 import pygame
 from pygame import mixer
 import csv
-import button
+import classes.button as button
 from classes.Soldier import Soldier
 from classes.World import World
 from classes.HealthBar import HealthBar
@@ -59,13 +59,14 @@ start_img = pygame.image.load('img/start_btn.png').convert_alpha()
 exit_img = pygame.image.load('img/exit_btn.png').convert_alpha()
 restart_img = pygame.image.load('img/restart_btn.png').convert_alpha()
 
-# load images
+# imagens do background
 clouds_front_img = pygame.image.load('img/background/clouds_front.png').convert_alpha()
 clouds_mid_img = pygame.image.load('img/background/clouds_mid.png').convert_alpha()
 far_mountains_img = pygame.image.load('img/background/far_mountains.png').convert_alpha()
 grassy_mountains_img = pygame.image.load('img/background/grassy_mountains.png').convert_alpha()
 sky_img = pygame.image.load('img/background/sky.png').convert_alpha()
 
+# redimensionamento das imagens do background
 escala = 2
 clouds_front_img = pygame.transform.smoothscale(clouds_front_img, (int(clouds_front_img.get_width()*escala), int(clouds_front_img.get_height()*escala)))
 clouds_mid_img = pygame.transform.smoothscale(clouds_mid_img, (int(clouds_mid_img.get_width()*escala), int(clouds_mid_img.get_height()*escala)))
@@ -101,7 +102,7 @@ item_boxes = {
     'Boldrini'  : boldrini_img,
     'Cloud'     : cloud_img  
 }
-
+# constantes com codigo de cores 
 BG = (126, 76, 67)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
@@ -114,7 +115,7 @@ font = pygame.font.SysFont("Futura", 30)
 def draw_text(text, font, text_col, x, y):
 	img = font.render(text, True, text_col)
 	screen.blit(img, (x, y))
-
+# funçao que carrega as imagens de background e define a velocidade de cada uma
 def draw_bg():
     screen.fill(BG)
     width = sky_img.get_width()
@@ -176,7 +177,7 @@ with open(f'level{level}_data.csv', newline='') as csvfile:
             world_data[x][y] = int(tile)
 world = World()
 player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, water_group, decoration_group, Soldier, HealthBar, enemy_group, item_boxes, item_box_group, exit_group)
-
+# while loop que termina quando o jogo é finalizado ou quando o jogador fecha a aba
 run = True
 while run:
 
@@ -268,6 +269,8 @@ while run:
             if level_complete:
                 start_intro = True
                 level += 1
+                if level > 3:
+                    run = False
                 bg_scroll = 0
                 world_data = reset_level()
                 if level <= MAX_LEVELS:

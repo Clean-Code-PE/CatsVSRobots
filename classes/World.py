@@ -2,7 +2,7 @@ from classes.Decoration import Decoration
 from classes.Water import Water
 from classes.Exit import Exit
 from classes.ItemBox import ItemBox
-
+# classe world com método que recebe os dados dos arquivos csv e desenha os niveis de acordo com as informaçoes
 class World():
     def __init__(self):
         self.obstacle_list = []
