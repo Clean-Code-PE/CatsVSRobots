@@ -9,6 +9,7 @@ clock = pygame.time.Clock()
 FPS = 60
 
 #game window
+BG = (0, 0, 0)
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 640
 LOWER_MARGIN = 100
@@ -31,11 +32,19 @@ scroll = 0
 scroll_speed = 1
 
 
-#load images
-pine1_img = pygame.image.load('img/background/pine1.png').convert_alpha()
-pine2_img = pygame.image.load('img/background/pine2.png').convert_alpha()
-mountain_img = pygame.image.load('img/background/mountain.png').convert_alpha()
-sky_img = pygame.image.load('img/background/sky_cloud.png').convert_alpha()
+# load images
+clouds_front_img = pygame.image.load('img/background/clouds_front.png').convert_alpha()
+clouds_mid_img = pygame.image.load('img/background/clouds_mid.png').convert_alpha()
+far_mountains_img = pygame.image.load('img/background/far_mountains.png').convert_alpha()
+grassy_mountains_img = pygame.image.load('img/background/grassy_mountains.png').convert_alpha()
+sky_img = pygame.image.load('img/background/sky.png').convert_alpha()
+
+escala = 2
+clouds_front_img = pygame.transform.smoothscale(clouds_front_img, (int(clouds_front_img.get_width()*escala), int(clouds_front_img.get_height()*escala)))
+clouds_mid_img = pygame.transform.smoothscale(clouds_mid_img, (int(clouds_mid_img.get_width()*escala), int(clouds_mid_img.get_height()*escala)))
+far_mountains_img = pygame.transform.smoothscale(far_mountains_img, (int(far_mountains_img.get_width()*escala), int(far_mountains_img.get_height()*escala)))
+grassy_mountains_img = pygame.transform.smoothscale(grassy_mountains_img, (int(grassy_mountains_img.get_width()*escala), int(grassy_mountains_img.get_height()*escala)))
+sky_img = pygame.transform.smoothscale(sky_img, (int(sky_img.get_width()*escala), int(sky_img.get_height()*escala)))
 #store tiles in a list
 img_list = []
 for x in range(TILE_TYPES):
@@ -74,13 +83,14 @@ def draw_text(text, font, text_col, x, y):
 
 #create function for drawing background
 def draw_bg():
-	screen.fill(GREEN)
-	width = sky_img.get_width()
-	for x in range(4):
-		screen.blit(sky_img, ((x * width) - scroll * 0.5, 0))
-		screen.blit(mountain_img, ((x * width) - scroll * 0.6, SCREEN_HEIGHT - mountain_img.get_height() - 300))
-		screen.blit(pine1_img, ((x * width) - scroll * 0.7, SCREEN_HEIGHT - pine1_img.get_height() - 150))
-		screen.blit(pine2_img, ((x * width) - scroll * 0.8, SCREEN_HEIGHT - pine2_img.get_height()))
+    screen.fill(BG)
+    width = sky_img.get_width()
+    for x in range(20):
+        screen.blit(sky_img, ((x*width)- scroll * 0.5,0))
+        screen.blit(far_mountains_img, ((x*width) - scroll * 0.6, SCREEN_HEIGHT - far_mountains_img.get_height()-50))
+        screen.blit(grassy_mountains_img, ((x*width) - scroll * 0.7, SCREEN_HEIGHT - grassy_mountains_img.get_height()-30))
+        screen.blit(clouds_mid_img, ((x*width) - scroll * 0.8, SCREEN_HEIGHT - clouds_mid_img.get_height()-20))
+        screen.blit(clouds_front_img, ((x*width) - scroll * 0.8, SCREEN_HEIGHT - clouds_front_img.get_height()))
 
 #draw grid
 def draw_grid():
