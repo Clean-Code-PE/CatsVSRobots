@@ -73,6 +73,10 @@ for x in range(TILE_TYPES):
     img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
     img_list.append(img)
 
+#interface
+heart = pygame.image.load('img/icons/heart-1.png.png').convert_alpha()
+background_interface = pygame.image.load('img/icons/background-interface.png').convert_alpha()
+
 #load bullet images
 bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
 grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
@@ -186,20 +190,22 @@ while run:
         #draw world map
         world.draw(screen_scroll, screen)
         #vida do jogador
-        health_bar.draw(player.health, screen, BLACK, RED, GREEN)
-        
+        #health_bar.draw(player.health, screen, BLACK, RED, GREEN)
+        screen.blit(background_interface, (10, 10))
         #Mostra na tela munição, granadas e vida
-        draw_text(f"AMMO: {player.ammo}", font, WHITE, 10, 35)
-        draw_text(f"GRENADES: {player.grenades}", font, WHITE, 10, 60)
+        draw_text(f"Munição: {player.ammo}", font, WHITE, 26, 55)
+        draw_text(f"Granadas: {player.grenades}", font, WHITE, 26, 86)
 
         #Número da VIDA
         # draw_text(f"{player.health}", font, WHITE, 165, 10)
+        for i in range(player.health):
+            screen.blit(heart, (35 + (i * 17), 25))
         #Decidir se deixa numero, imagem ou os dois
-        for x in range (player.ammo):
-            screen.blit(bullet_img, (120 + (x * 10), 40))
-        for x in range (player.grenades): 
-            screen.blit(grenade_img, (165 + (x * 15), 60))
-        draw_text(f"SPEED: {player.speed}", font, WHITE, 10, 85)
+        # for x in range (player.ammo):
+        #     screen.blit(bullet_img, (120 + (x * 10), 40))
+        # for x in range (player.grenades): 
+        #     screen.blit(grenade_img, (165 + (x * 15), 60))
+        #draw_text(f"SPEED: {player.speed}", font, WHITE, 10, 85)
 
 
         player.update()

@@ -13,7 +13,7 @@ class Soldier(pygame.sprite.Sprite):
         self.start_grenades = grenades
         self.ammo = ammo #Munição
         self.start_ammo = ammo
-        self.health = 100
+        self.health = 10
         self.max_health = self.health
         self.shoot_cooldown = 0
         self.direction = 1
