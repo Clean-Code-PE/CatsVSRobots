@@ -268,6 +268,8 @@ while run:
             if level_complete:
                 start_intro = True
                 level += 1
+                if level > 3:
+                    run = False
                 bg_scroll = 0
                 world_data = reset_level()
                 if level <= MAX_LEVELS:
