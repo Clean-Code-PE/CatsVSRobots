@@ -60,11 +60,18 @@ exit_img = pygame.image.load('img/exit_btn.png').convert_alpha()
 restart_img = pygame.image.load('img/restart_btn.png').convert_alpha()
 
 # load images
-pine1_img = pygame.image.load('img/background/pine1.png').convert_alpha()
-pine2_img = pygame.image.load('img/background/pine2.png').convert_alpha()
-mountain_img = pygame.image.load('img/background/mountain.png').convert_alpha()
-sky_img = pygame.image.load('img/background/sky_cloud.png').convert_alpha()
+clouds_front_img = pygame.image.load('img/background/clouds_front.png').convert_alpha()
+clouds_mid_img = pygame.image.load('img/background/clouds_mid.png').convert_alpha()
+far_mountains_img = pygame.image.load('img/background/far_mountains.png').convert_alpha()
+grassy_mountains_img = pygame.image.load('img/background/grassy_mountains.png').convert_alpha()
+sky_img = pygame.image.load('img/background/sky.png').convert_alpha()
 
+escala = 2
+clouds_front_img = pygame.transform.smoothscale(clouds_front_img, (int(clouds_front_img.get_width()*escala), int(clouds_front_img.get_height()*escala)))
+clouds_mid_img = pygame.transform.smoothscale(clouds_mid_img, (int(clouds_mid_img.get_width()*escala), int(clouds_mid_img.get_height()*escala)))
+far_mountains_img = pygame.transform.smoothscale(far_mountains_img, (int(far_mountains_img.get_width()*escala), int(far_mountains_img.get_height()*escala)))
+grassy_mountains_img = pygame.transform.smoothscale(grassy_mountains_img, (int(grassy_mountains_img.get_width()*escala), int(grassy_mountains_img.get_height()*escala)))
+sky_img = pygame.transform.smoothscale(sky_img, (int(sky_img.get_width()*escala), int(sky_img.get_height()*escala)))
 
 #store tiles in a list
 img_list = []
@@ -72,6 +79,10 @@ for x in range(TILE_TYPES):
     img = pygame.image.load(f'img/tile/{x}.png')
     img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
     img_list.append(img)
+
+#interface
+heart = pygame.image.load('img/icons/heart-1.png.png').convert_alpha()
+background_interface = pygame.image.load('img/icons/background-interface.png').convert_alpha()
 
 #load bullet images
 bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
@@ -91,7 +102,7 @@ item_boxes = {
     'Cloud'     : cloud_img  
 }
 
-BG = (0, 0, 0)
+BG = (126, 76, 67)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
@@ -104,15 +115,15 @@ def draw_text(text, font, text_col, x, y):
 	img = font.render(text, True, text_col)
 	screen.blit(img, (x, y))
 
-
 def draw_bg():
     screen.fill(BG)
     width = sky_img.get_width()
-    for x in range(5):
+    for x in range(20):
         screen.blit(sky_img, ((x*width)- bg_scroll * 0.5,0))
-        screen.blit(mountain_img, ((x*width) - bg_scroll * 0.6, screen_height - mountain_img.get_height()-300))
-        screen.blit(pine1_img, ((x*width) - bg_scroll * 0.7, screen_height - pine1_img.get_height()-150))
-        screen.blit(pine2_img, ((x*width) - bg_scroll * 0.8, screen_height - pine2_img.get_height()))
+        screen.blit(far_mountains_img, ((x*width) - bg_scroll * 0.6, screen_height - far_mountains_img.get_height()-50))
+        screen.blit(grassy_mountains_img, ((x*width) - bg_scroll * 0.7, screen_height - grassy_mountains_img.get_height()-30))
+        screen.blit(clouds_mid_img, ((x*width) - bg_scroll * 0.8, screen_height - clouds_mid_img.get_height()-20))
+        screen.blit(clouds_front_img, ((x*width) - bg_scroll * 0.8, screen_height - clouds_front_img.get_height()))
 
 def reset_level():
     enemy_group.empty()
@@ -137,9 +148,9 @@ intro_fade = ScreenFade(1, BLACK, 4)
 death_fade = ScreenFade(2, PINK, 6)
 
 # create buttons
-start_button = button.Button(screen_width//2-130, screen_height//2-150, start_img, 1)
-exit_button = button.Button(screen_width//2-110, screen_height//2+50, exit_img, 1)
-restart_button = button.Button(screen_width//2-100, screen_height//2 - 50, restart_img, 2)
+start_button = button.Button(screen_width//2-180, screen_height//2-200, start_img, 1.5)
+exit_button = button.Button(screen_width//2-173, screen_height//2+50, exit_img, 1.4)
+restart_button = button.Button(screen_width//2-160, screen_height//2 - 100, restart_img, 1.3) 
 
 
 #create sprites groups
@@ -186,20 +197,22 @@ while run:
         #draw world map
         world.draw(screen_scroll, screen)
         #vida do jogador
-        health_bar.draw(player.health, screen, BLACK, RED, GREEN)
-        
+        #health_bar.draw(player.health, screen, BLACK, RED, GREEN)
+        screen.blit(background_interface, (10, 10))
         #Mostra na tela munição, granadas e vida
-        draw_text(f"AMMO: {player.ammo}", font, WHITE, 10, 35)
-        draw_text(f"GRENADES: {player.grenades}", font, WHITE, 10, 60)
+        draw_text(f"Munição: {player.ammo}", font, WHITE, 26, 55)
+        draw_text(f"Granadas: {player.grenades}", font, WHITE, 26, 86)
 
         #Número da VIDA
         # draw_text(f"{player.health}", font, WHITE, 165, 10)
+        for i in range(player.health):
+            screen.blit(heart, (35 + (i * 17), 25))
         #Decidir se deixa numero, imagem ou os dois
-        for x in range (player.ammo):
-            screen.blit(bullet_img, (120 + (x * 10), 40))
-        for x in range (player.grenades): 
-            screen.blit(grenade_img, (165 + (x * 15), 60))
-        draw_text(f"SPEED: {player.speed}", font, WHITE, 10, 85)
+        # for x in range (player.ammo):
+        #     screen.blit(bullet_img, (120 + (x * 10), 40))
+        # for x in range (player.grenades): 
+        #     screen.blit(grenade_img, (165 + (x * 15), 60))
+        #draw_text(f"SPEED: {player.speed}", font, WHITE, 10, 85)
 
 
         player.update()

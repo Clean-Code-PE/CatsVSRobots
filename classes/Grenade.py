@@ -53,9 +53,9 @@ class Grenade(pygame.sprite.Sprite):
             #damage explosion
             if abs(self.rect.centerx - player.rect.centerx) < TILE_SIZE * 2 and \
                 abs(self.rect.centery - player.rect.centery) < TILE_SIZE * 2:
-                player.health -= 50
+                player.health -= 3
 
             for enemy in enemy_group:
                 if abs(self.rect.centerx - enemy.rect.centerx) < TILE_SIZE * 2 and \
                     abs(self.rect.centery - enemy.rect.centery) < TILE_SIZE * 2:
-                    enemy.health -= 50
+                    enemy.health -= 5
