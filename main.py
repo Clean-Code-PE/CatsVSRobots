@@ -91,7 +91,7 @@ item_boxes = {
     'Cloud'     : cloud_img  
 }
 
-BG = (0, 0, 0)
+BG = (212, 175, 148)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
@@ -137,9 +137,9 @@ intro_fade = ScreenFade(1, BLACK, 4)
 death_fade = ScreenFade(2, PINK, 6)
 
 # create buttons
-start_button = button.Button(screen_width//2-130, screen_height//2-150, start_img, 1)
-exit_button = button.Button(screen_width//2-110, screen_height//2+50, exit_img, 1)
-restart_button = button.Button(screen_width//2-100, screen_height//2 - 50, restart_img, 2)
+start_button = button.Button(screen_width//2-175, screen_height//2-200, start_img, 1.5)
+exit_button = button.Button(screen_width//2-145, screen_height//2+50, exit_img, 1.2)
+restart_button = button.Button(screen_width//2-190, screen_height//2 - 150, restart_img, 2)
 
 
 #create sprites groups
