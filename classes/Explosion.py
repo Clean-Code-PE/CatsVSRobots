@@ -18,8 +18,9 @@ class Explosion(pygame.sprite.Sprite):
         #scroll
         self.rect.x += screen_scroll
 
+        #Velocidade da explosão, quanto tempo ela demora para explodit
         EXPLOSION_SPEED = 4
-        #update
+        #Faz a contagem até a EXPLOSION_SPEED
         self.counter += 1
         
         if self.counter >= EXPLOSION_SPEED:
