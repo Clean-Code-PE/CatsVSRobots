@@ -1,12 +1,15 @@
 import pygame
 from pygame import mixer
 import csv
-import button
+import classes.button as button
 from classes.Soldier import Soldier
 from classes.World import World
 from classes.HealthBar import HealthBar
 from classes.ScreenFade import ScreenFade 
 from classes.Grenade import Grenade
+
+icon = pygame.image.load('./img/icons/icon.png') 
+pygame.display.set_icon(icon)
 
 mixer.init()
 pygame.init()
@@ -42,7 +45,7 @@ grenade_tick = False
 
 #load music and sounds
 pygame.mixer.music.load('audio/music.mp3')
-pygame.mixer.music.set_volume(0.2)
+pygame.mixer.music.set_volume(0.08)
 pygame.mixer.music.play(-1, 0.0, 5000)
 jump_fx = pygame.mixer.Sound('audio/jump.wav')
 jump_fx.set_volume(0.5)
@@ -56,12 +59,20 @@ start_img = pygame.image.load('img/start_btn.png').convert_alpha()
 exit_img = pygame.image.load('img/exit_btn.png').convert_alpha()
 restart_img = pygame.image.load('img/restart_btn.png').convert_alpha()
 
-# load images
-pine1_img = pygame.image.load('img/background/pine1.png').convert_alpha()
-pine2_img = pygame.image.load('img/background/pine2.png').convert_alpha()
-mountain_img = pygame.image.load('img/background/mountain.png').convert_alpha()
-sky_img = pygame.image.load('img/background/sky_cloud.png').convert_alpha()
+# imagens do background
+clouds_front_img = pygame.image.load('img/background/clouds_front.png').convert_alpha()
+clouds_mid_img = pygame.image.load('img/background/clouds_mid.png').convert_alpha()
+far_mountains_img = pygame.image.load('img/background/far_mountains.png').convert_alpha()
+grassy_mountains_img = pygame.image.load('img/background/grassy_mountains.png').convert_alpha()
+sky_img = pygame.image.load('img/background/sky.png').convert_alpha()
 
+# redimensionamento das imagens do background
+escala = 2
+clouds_front_img = pygame.transform.smoothscale(clouds_front_img, (int(clouds_front_img.get_width()*escala), int(clouds_front_img.get_height()*escala)))
+clouds_mid_img = pygame.transform.smoothscale(clouds_mid_img, (int(clouds_mid_img.get_width()*escala), int(clouds_mid_img.get_height()*escala)))
+far_mountains_img = pygame.transform.smoothscale(far_mountains_img, (int(far_mountains_img.get_width()*escala), int(far_mountains_img.get_height()*escala)))
+grassy_mountains_img = pygame.transform.smoothscale(grassy_mountains_img, (int(grassy_mountains_img.get_width()*escala), int(grassy_mountains_img.get_height()*escala)))
+sky_img = pygame.transform.smoothscale(sky_img, (int(sky_img.get_width()*escala), int(sky_img.get_height()*escala)))
 
 #store tiles in a list
 img_list = []
@@ -69,6 +80,10 @@ for x in range(TILE_TYPES):
     img = pygame.image.load(f'img/tile/{x}.png')
     img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
     img_list.append(img)
+
+#interface
+heart = pygame.image.load('img/icons/heart-1.png.png').convert_alpha()
+background_interface = pygame.image.load('img/icons/background-interface.png').convert_alpha()
 
 #load bullet images
 bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
@@ -87,8 +102,8 @@ item_boxes = {
     'Boldrini'  : boldrini_img,
     'Cloud'     : cloud_img  
 }
-
-BG = (144, 201, 120)
+# constantes com codigo de cores 
+BG = (126, 76, 67)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
@@ -100,16 +115,16 @@ font = pygame.font.SysFont("Futura", 30)
 def draw_text(text, font, text_col, x, y):
 	img = font.render(text, True, text_col)
 	screen.blit(img, (x, y))
-
-
+# funçao que carrega as imagens de background e define a velocidade de cada uma
 def draw_bg():
     screen.fill(BG)
     width = sky_img.get_width()
-    for x in range(5):
+    for x in range(20):
         screen.blit(sky_img, ((x*width)- bg_scroll * 0.5,0))
-        screen.blit(mountain_img, ((x*width) - bg_scroll * 0.6, screen_height - mountain_img.get_height()-300))
-        screen.blit(pine1_img, ((x*width) - bg_scroll * 0.7, screen_height - pine1_img.get_height()-150))
-        screen.blit(pine2_img, ((x*width) - bg_scroll * 0.8, screen_height - pine2_img.get_height()))
+        screen.blit(far_mountains_img, ((x*width) - bg_scroll * 0.6, screen_height - far_mountains_img.get_height()-50))
+        screen.blit(grassy_mountains_img, ((x*width) - bg_scroll * 0.7, screen_height - grassy_mountains_img.get_height()-30))
+        screen.blit(clouds_mid_img, ((x*width) - bg_scroll * 0.8, screen_height - clouds_mid_img.get_height()-20))
+        screen.blit(clouds_front_img, ((x*width) - bg_scroll * 0.8, screen_height - clouds_front_img.get_height()))
 
 def reset_level():
     enemy_group.empty()
@@ -134,9 +149,9 @@ intro_fade = ScreenFade(1, BLACK, 4)
 death_fade = ScreenFade(2, PINK, 6)
 
 # create buttons
-start_button = button.Button(screen_width//2-130, screen_height//2-150, start_img, 1)
-exit_button = button.Button(screen_width//2-110, screen_height//2+50, exit_img, 1)
-restart_button = button.Button(screen_width//2-100, screen_height//2 - 50, restart_img, 2)
+start_button = button.Button(screen_width//2-180, screen_height//2-200, start_img, 1.5)
+exit_button = button.Button(screen_width//2-173, screen_height//2+50, exit_img, 1.4)
+restart_button = button.Button(screen_width//2-160, screen_height//2 - 100, restart_img, 1.3) 
 
 
 #create sprites groups
@@ -162,7 +177,7 @@ with open(f'level{level}_data.csv', newline='') as csvfile:
             world_data[x][y] = int(tile)
 world = World()
 player, health_bar = world.process_data(world_data, img_list, TILE_SIZE, water_group, decoration_group, Soldier, HealthBar, enemy_group, item_boxes, item_box_group, exit_group)
-
+# while loop que termina quando o jogo é finalizado ou quando o jogador fecha a aba
 run = True
 while run:
 
@@ -183,20 +198,22 @@ while run:
         #draw world map
         world.draw(screen_scroll, screen)
         #vida do jogador
-        health_bar.draw(player.health, screen, BLACK, RED, GREEN)
-        
+        #health_bar.draw(player.health, screen, BLACK, RED, GREEN)
+        screen.blit(background_interface, (10, 10))
         #Mostra na tela munição, granadas e vida
-        draw_text(f"AMMO: {player.ammo}", font, WHITE, 10, 35)
-        draw_text(f"GRENADES: {player.grenades}", font, WHITE, 10, 60)
+        draw_text(f"Munição: {player.ammo}", font, WHITE, 26, 55)
+        draw_text(f"Granadas: {player.grenades}", font, WHITE, 26, 86)
 
         #Número da VIDA
         # draw_text(f"{player.health}", font, WHITE, 165, 10)
+        for i in range(player.health):
+            screen.blit(heart, (35 + (i * 17), 25))
         #Decidir se deixa numero, imagem ou os dois
-        for x in range (player.ammo):
-            screen.blit(bullet_img, (120 + (x * 10), 40))
-        for x in range (player.grenades): 
-            screen.blit(grenade_img, (165 + (x * 15), 60))
-        draw_text(f"SPEED: {player.speed}", font, WHITE, 10, 85)
+        # for x in range (player.ammo):
+        #     screen.blit(bullet_img, (120 + (x * 10), 40))
+        # for x in range (player.grenades): 
+        #     screen.blit(grenade_img, (165 + (x * 15), 60))
+        #draw_text(f"SPEED: {player.speed}", font, WHITE, 10, 85)
 
 
         player.update()
@@ -252,6 +269,8 @@ while run:
             if level_complete:
                 start_intro = True
                 level += 1
+                if level > 3:
+                    run = False
                 bg_scroll = 0
                 world_data = reset_level()
                 if level <= MAX_LEVELS:
@@ -288,15 +307,15 @@ while run:
             run = False
         # keyboard presses
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
+            if event.key == pygame.K_LEFT:
                 moving_left = True
-            if event.key == pygame.K_d:
+            if event.key == pygame.K_RIGHT:
                 moving_right = True
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_z:
                 shoot = True
-            if event.key == pygame.K_q:
+            if event.key == pygame.K_x:
                 grenade = True
-            if event.key == pygame.K_w and player.alive:
+            if event.key == pygame.K_UP and player.alive:
                 player.jump = True
                 jump_fx.play()
             if event.key == pygame.K_ESCAPE:
@@ -306,13 +325,13 @@ while run:
                 run = True
         # keyboard button released
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_a:
+            if event.key == pygame.K_LEFT:
                 moving_left = False
-            if event.key == pygame.K_d:
+            if event.key == pygame.K_RIGHT:
                 moving_right = False
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_z:
                 shoot = False
-            if event.key == pygame.K_q:
+            if event.key == pygame.K_x:
                 grenade = False
                 grenade_tick = False
 

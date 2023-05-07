@@ -2,7 +2,7 @@ from classes.Decoration import Decoration
 from classes.Water import Water
 from classes.Exit import Exit
 from classes.ItemBox import ItemBox
-
+# classe world com método que recebe os dados dos arquivos csv e desenha os niveis de acordo com as informaçoes
 class World():
     def __init__(self):
         self.obstacle_list = []
@@ -28,7 +28,7 @@ class World():
                         decoration = Decoration(img, x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE)
                         decoration_group.add(decoration)
                     elif tile == 15: #create player
-                        player = Soldier('player', x*TILE_SIZE, y*TILE_SIZE, 1.65, 5, 20, 10)
+                        player = Soldier('player', x*TILE_SIZE, y*TILE_SIZE, 2.2, 5, 20, 10)
                         health_bar = HealthBar(10, 10, player.health, player.health)
                     elif tile == 16:
                         enemy = Soldier('enemy', x*TILE_SIZE, y*TILE_SIZE, 1.65, 2, 20)
