@@ -1,4 +1,4 @@
-# Unnamed
+# CatsVSRobots
 
 Jogo shooter 2d de plataforma, criado para aplicar conceitos essencias de programação na pratica, utilizando python e a biblioteca pygame.
 
@@ -15,13 +15,13 @@ Antes de executar o projeto, verifique se você:
 Clone o projeto
 
 ```bash
-  git clone https://github.com/Clean-Code-PE/unnamed.git
+  git clone https://github.com/Clean-Code-PE/CatsVSRobots.git
 ```
 
 Abre o diretorio do projeto
 
 ```bash
-  cd unnamed
+  cd CatsVSRobots
 ```
 
 Execute o arquivo main
